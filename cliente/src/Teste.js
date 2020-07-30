@@ -13,51 +13,65 @@ class Teste extends Component {
         this.state = {
             linksDoItem: [],
             listaDeComprasSemLicitacao: [],
-            textoBotaoComprasSemLicitacao: 'Carregar compras sem licitação',
             showModal: false,
             listaDeMarcas: [],
         }
 
-        this.obterComprasSemLicitacao = this.obterComprasSemLicitacao.bind(this)
+        this.carregarComprasSemLicitacao = this.carregarComprasSemLicitacao.bind(this)
+        this.carregarComprasSemLicitacaoDoBanco = this.carregarComprasSemLicitacaoDoBanco.bind(this)
+        this.carregarComprasPorAno = this.carregarComprasPorAno.bind(this)
     }
 
-    async obterComprasSemLicitacao() {
-        const teste = await axios.get('/teste')
-        console.log(teste);
+    async carregarComprasSemLicitacaoDoBanco() {
+        this.setState({ showModal: true })
+        const teste = await axios.get('http://localhost:5000/comprassemlicitacao')
+        .catch(err => {
+            this.setState({ showModal: false })
+        })
+        this.setState({ listaDeComprasSemLicitacao: teste.data.rows })
+        this.carregarTodasAsMarcasCadastradas()
+        this.setState({ showModal: false })
+    }
 
-        // this.setState({ showModal: true })
-        // var linkDoItem = []
+    async carregarTodasAsMarcasCadastradas() {
+        const teste = await axios.get('http://localhost:5000/todasasmarcas')
+        this.setState({ listaDeMarcas: teste.data.rows })
+    }
 
-        // // for (var i = 0; i < qtdCodigosDosMateriais; i++) {
-        //     const resposta = await axios.get(
-        //         '/compraSemLicitacao/v1/itens_compras_slicitacao.json',
-        //         {
-        //             params: {
-        //                 co_conjunto_materiais: '399010'//codigosDosMateirias[i]
-        //             }
-        //         }
-        //     ).catch(error => {
-        //         alert('Houve um erro ao obter compras sem licitação para o item "399010". Por favor, tente novamente.')
-        //         this.setState({ showModal: false })
-        //     })
+    async carregarComprasSemLicitacao() {
+        this.setState({ showModal: true })
+        var linkDoItem = []
 
-        //     var listaDeComprasDe2015 = []
-        //     var dataRecebida
-        //     var comprasSemLicitacao = resposta.data._embedded.compras
+        // for (var i = 0; i < qtdCodigosDosMateriais; i++) {
+        const resposta = await axios.get(
+            '/compraSemLicitacao/v1/itens_compras_slicitacao.json',
+            {
+                params: {
+                    co_conjunto_materiais: '399010'//codigosDosMateirias[i]
+                }
+            }
+        ).catch(error => {
+            this.setState({ showModal: false })
+            alert('Houve um erro ao obter compras sem licitação para o item "399010". Por favor, tente novamente. Erro: ' + error.data)
+        })
 
-        //     for (var x in comprasSemLicitacao) {
-        //         dataRecebida = new Date(comprasSemLicitacao[x].dtDeclaracaoDispensa.toString())
+        var listaDeComprasDe2015 = []
+        var dataRecebida
+        var comprasSemLicitacao = resposta.data._embedded.compras
 
-        //         if (dataRecebida.getFullYear() >= '2015') {
-        //             listaDeComprasDe2015.push(comprasSemLicitacao[x])
-        //             linkDoItem.push(comprasSemLicitacao[x]._links.Itens.href)
-        //         }
-        //     }
-        //     debugger
-        //     this.setState({ listaDeComprasSemLicitacao: listaDeComprasDe2015 })
-        //     this.setState({ linksDoItem: linkDoItem })
-        //     this.obterItensDeCompraSemLicitacao()
-        // // }
+        for (var x in comprasSemLicitacao) {
+            dataRecebida = new Date(comprasSemLicitacao[x].dtDeclaracaoDispensa.toString())
+
+            if (dataRecebida.getFullYear() >= '2015') {
+                listaDeComprasDe2015.push(comprasSemLicitacao[x])
+                linkDoItem.push(comprasSemLicitacao[x]._links.Itens.href)
+            }
+        }
+
+        this.setState({ listaDeComprasSemLicitacao: listaDeComprasDe2015 })
+        this.setState({ linksDoItem: linkDoItem })
+        this.obterItensDeCompraSemLicitacao()
+        // }
     }
 
     async obterItensDeCompraSemLicitacao() {
@@ -80,10 +94,10 @@ class Teste extends Component {
             if (hasError) {
                 link--
                 continue
-            }
-
-            for (var x in res.data._embedded.compras) {
-                todasAsMarcas.push(res.data._embedded.compras[x].no_marca_material.toUpperCase())
+            } else {
+                for (var x in res.data._embedded.compras) {
+                    todasAsMarcas.push(res.data._embedded.compras[x].no_marca_material.toUpperCase())
+                }
             }
 
             console.log('dentro do for')
@@ -98,8 +112,34 @@ class Teste extends Component {
         console.log(marcas)
         this.setState({ showModal: false })
         this.setState({ listaDeMarcas: marcas })
+        this.atualizarTabelaDeComprasSemLicitacao()
         document.getElementById('listasDeMarcasDeComprasSLicitacao').hidden = false
         console.log('saindo')
+    }
+
+    async atualizarTabelaDeComprasSemLicitacao() {
+        const resposta = await axios.post('http://localhost:5000/atualizartabeladecomprassemlicitacao', {
+            codigodacompra: '123',
+            nomedamarca: 'abc',
+            datadacompra: '2015-01-01',//.slice(0, -14),
+            modalidade: 'Indeciso',
+            codigocatmat: 123456,
+            descricaodoitem: 'abc',
+            unidadedefornecimento: 'fdfdfd',
+            quantidadeofertada: 456,
+            valorunitario: 456,
+            nomedofornecedor: 'abc',
+            uasg: 123,
+            uf: 'RJ'
+        })
+            .then(response => {
+                if (response.data.severity === 'ERROR') {
+                    return 'Não foi possível atualizar pois ocorreu um erro em: ' + response.data.routine
+                }
+                return response.data
+            })
+
+        alert(resposta)
     }
 
     listarMarcas() {
@@ -108,62 +148,47 @@ class Teste extends Component {
         }
     }
 
+    carregarComprasPorAno(ano, nomeDaMarca) {
+        alert('Clicou no ano ' + ano + ' da marca ' + nomeDaMarca)
+    }
+
     render() {
+        const anos = ['2015', '2016', '2017', '2018', '2019', '2020']
         return (
             <Fragment>
-                <Button onClick={this.obterComprasSemLicitacao} variant="primary">
-                    {this.state.textoBotaoComprasSemLicitacao}
+                <Button onClick={this.carregarComprasSemLicitacaoDoBanco} variant="primary">
+                    Carregar compras sem licitação
                 </Button>
-                {/* <Button onClick={this.exibirModal.bind(this)}>Abrir modal</Button> */}
+                <Button onClick={this.carregarComprasSemLicitacao} variant="primary">
+                    Atualizar lista de compras sem licitação
+                </Button>
                 <Modal show={this.state.showModal} dialogClassName="modal-90w" aria-labelledby="example-custom-modal-styling-title">
-                    {/* <Modal.Header closeButton onClick={this.fecharModal.bind(this)}>
-                        <Modal.Title>Modal title</Modal.Title>
-                    </Modal.Header> */}
-
                     <Modal.Body>
                         <ProgressBar animated now={100} />
                         <p className="mt-2 mb-0 text-center">Carregando...</p>
                     </Modal.Body>
-
-                    {/* <Modal.Footer>
-                        <Button variant="secondary">Close</Button>
-                        <Button variant="primary">Save changes</Button>
-                    </Modal.Footer> */}
                 </Modal>
-                {/* <div id="divDeTeste" style={{ width: 'auto', height: 'auto' }} className="container text-white bg-dark" hidden>
-                    {this.state.listaDeMarcas.map((listaDeMarcas, index) => {
-                        return <p>{listaDeMarcas}</p>
-                    })}
-                </div> */}
-                <div id="listasDeMarcasDeComprasSLicitacao" hidden>
+                <div id="listasDeMarcasDeComprasSLicitacao">
                     <Accordion>
-                        {this.state.listaDeMarcas.map((listaDeMarcas, i) => {
+                        {this.state.listaDeMarcas.map((listaDeMarcas) => {
                             return <Card>
                                 <Card.Header>
-                                    <Accordion.Toggle as={Button} variant="link" eventKey={i.toString()}>
-                                        {listaDeMarcas}
+                                    <Accordion.Toggle as={Button} variant="link" eventKey={listaDeMarcas.id.toString()}>
+                                        {listaDeMarcas.nome}
                                     </Accordion.Toggle>
                                 </Card.Header>
-                                <Accordion.Collapse eventKey={i.toString()}>
+                                <Accordion.Collapse eventKey={listaDeMarcas.id.toString()}>
                                     <Card.Body>
-                                        <p>
-                                            <a href="/">2015</a>
-                                        </p>
-                                        <p>
-                                            <a href="/">2016</a>
-                                        </p>
-                                        <p>
-                                            <a href="/">2017</a>
-                                        </p>
-                                        <p>
-                                            <a href="/">2018</a>
-                                        </p>
-                                        <p>
-                                            <a href="/">2019</a>
-                                        </p>
-                                        <p>
-                                            <a href="/">2020</a>
-                                        </p>
+                                        <div className="btn-group">
+                                            {anos.map((ano) => {
+                                                return <button
+                                                    type="button"
+                                                    className="btn btn-secondary"
+                                                    onClick={() => this.carregarComprasPorAno(ano, listaDeMarcas.nome)}>
+                                                    {ano}
+                                                </button>
+                                            })}
+                                        </div>
                                     </Card.Body>
                                 </Accordion.Collapse>
                             </Card>
