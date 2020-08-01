@@ -128,17 +128,15 @@ class Teste extends Component {
         for (var i = 0; i < qtdDeLinks; i++) {
             linkDoItem = this.state.linksDoItem[i].replace('/id/', '/doc/') + '.json'
 
-            await axios.get(
-                linkDoItem
-            ).then(async (resposta) => {
-                if (resposta.data.severity === 'ERROR') {
-                    hasErro = true
-                } else {
-                    debugger
-                    await this.atualizarTabelas(resposta, i)
-                    hasErro = false
-                }
-            })
+            const resposta = await axios.get(linkDoItem)
+
+            if (resposta.data.severity === 'ERROR') {
+                hasErro = true
+            } else {
+                debugger
+                await this.atualizarTabelas(resposta, i)
+                hasErro = false
+            }
 
             if (hasErro) {
                 i--
@@ -151,7 +149,7 @@ class Teste extends Component {
 
     async atualizarTabelas(resposta, indexAtual) {
         const compras = resposta.data._embedded.compras
-        const index = compras.findIndex(c => c.co_conjunto_materiais == 399010)
+        const index = compras.findIndex(c => c.co_conjunto_materiais === 399010)
         const marcaAtual = compras[index].no_marca_material.toUpperCase()
 
         await this.atualizarTabelaDeMarcas(marcaAtual)
