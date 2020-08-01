@@ -1,10 +1,10 @@
 import React from 'react';
 import './App.css';
-import index from './compras_sem_licitacao/index.js';
+import Index from './compras_sem_licitacao/index.js';
 
 function App() {
     return ( 
-        <index />
+        <Index />
     );
 }
 
