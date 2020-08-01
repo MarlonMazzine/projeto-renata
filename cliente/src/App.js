@@ -1,10 +1,10 @@
 import React from 'react';
 import './App.css';
-import Teste from './Teste';
+import index from './compras_sem_licitacao/index.js';
 
 function App() {
     return ( 
-        <Teste />
+        <index />
     );
 }
 
