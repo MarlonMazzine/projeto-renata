@@ -4,6 +4,8 @@ import 'bootstrap/dist/css/bootstrap.min.css'
 import axios from 'axios'
 import ComprasDoBanco from './banco/Compras'
 import MarcasDoBanco from './banco/Marcas'
+import ComprasApi from './api/Compras'
+import ItensApi from './api/Itens'
 import Fornecedor from './api/Fornecedor'
 import Uf from './api/Uf'
 
@@ -15,15 +17,6 @@ materiais.set('433218', 'Insulina, tipo: degludeca, concentração: 100 ui,ml, f
 materiais.set('442011', 'Insulina, tipo: regular, concentração: 100 ui,ml, forma farmaceutica: solução injetável, adicionais: c, sistema de aplicação')
 materiais.set('399010', 'Insulina, tipo: glargina, concentração: 100 ui,ml, forma farmaceutica: solução injetável, caracteristica adicional: com aplicador')
 
-// const nomeDosMateriais = [
-//     'Insulina, origem: aspart, dosagem: 100u,ml, aplicação: injetável',
-//     'Insulina, origem: lispro, dosagem: 100u,ml, aplicação: injetável',
-//     'Insulina, origem: glargina, dosagem: 100ui,ml, aplicação: injetável',
-//     'Insulina, tipo: degludeca, concentração: 100 ui,ml, forma farmaceutica: solução injetável, caracteristica adicional: com aplicador',
-//     'Insulina, tipo: regular, concentração: 100 ui,ml, forma farmaceutica: solução injetável, adicionais: c, sistema de aplicação',
-//     'Insulina, tipo: glargina, concentração: 100 ui,ml, forma farmaceutica: solução injetável, caracteristica adicional: com aplicador'
-// ]
-// const codigosDosMateirias = ['276234', '276233', '273836', '433218', '442011', '399010']
 // const qtdCodigosDosMateriais = codigosDosMateirias.length
 
 class index extends Component {
@@ -42,6 +35,8 @@ class index extends Component {
 
         this.carregarComprasDoBanco = new ComprasDoBanco()
         this.carregarMarcasDoBanco = new MarcasDoBanco()
+        this.carregarComprasDaApi = new ComprasApi()
+        this.carregarItensApi = new ItensApi()
         this.carregarNomeDoFornecedor = new Fornecedor()
         this.carregarNomeDaUf = new Uf()
         // this.carregarComprasSemLicitacao = new Compras(props)//.carregarComprasSemLicitacao.bind(this)
@@ -94,38 +89,51 @@ class index extends Component {
     async carregarComprasSemLicitacao() {
         this.setState({ showModal: true })
 
+        const comprasDe2015Ate2020 = await this.carregarComprasDaApi.obterCompras(Array.from(materiais.keys()))
+        const qtdDeComprasDe2015Ate2020 = comprasDe2015Ate2020.length
+        var itensDaCompra
+        var linkDoItem
+
+        for (var i = 0; i < qtdDeComprasDe2015Ate2020; i++) {
+            linkDoItem = comprasDe2015Ate2020[i]._links.Itens.href.replace('/id/', '/doc/') + '.json'
+            itensDaCompra = await this.carregarItensApi.obterItens(linkDoItem)
+            await this.atualizarTabelas(comprasDe2015Ate2020, itensDaCompra, i)
+        }
+
+
+
         // for (var i = 0; i < qtdCodigosDosMateriais; i++) {
-        await axios.get(
-            '/compraSemLicitacao/v1/itens_compras_slicitacao.json',
-            {
-                params: {
-                    co_conjunto_materiais: '399010',//codigosDosMateirias[i],
-                    order_by: 'dtDeclaracaoDispensa'
-                }
-            }
-        ).then(resposta => {
-            var linkDoItem = []
-            var listaDeComprasDe2015 = []
-            var dataRecebida
-            var compras = resposta.data._embedded.compras
+        // await axios.get(
+        //     '/compraSemLicitacao/v1/itens_compras_slicitacao.json',
+        //     {
+        //         params: {
+        //             co_conjunto_materiais: '399010',//codigosDosMateirias[i],
+        //             order_by: 'dtDeclaracaoDispensa'
+        //         }
+        //     }
+        // ).then(resposta => {
+        //     var linkDoItem = []
+        //     var listaDeComprasDe2015 = []
+        //     var dataRecebida
+        //     var compras = resposta.data._embedded.compras
 
-            for (var x in compras) {
-                dataRecebida = new Date(compras[x].dtDeclaracaoDispensa.toString())
+        //     for (var x in compras) {
+        //         dataRecebida = new Date(compras[x].dtDeclaracaoDispensa.toString())
 
-                if (dataRecebida.getFullYear() >= '2015') {
-                    listaDeComprasDe2015.push(compras[x])
-                    linkDoItem.push(compras[x]._links.Itens.href)
-                }
-            }
+        //         if (dataRecebida.getFullYear() >= '2015') {
+        //             listaDeComprasDe2015.push(compras[x])
+        //             linkDoItem.push(compras[x]._links.Itens.href)
+        //         }
+        //     }
 
-            this.setState({ codigoDoMaterialAtual: '399010' })//codigosDosMateirias[i]})
-            this.setState({ listaDeComprasSemLicitacao: listaDeComprasDe2015 })
-            this.setState({ linksDoItem: linkDoItem })
-            this.obterItensDeCompraSemLicitacao()
-        }).catch(error => {
-            this.fecharModal()
-            alert('Houve um erro ao obter compras sem licitação para o item "399010". Por favor, tente novamente. Erro: ' + error.data)
-        })
+        //     this.setState({ codigoDoMaterialAtual: '399010' })//codigosDosMateirias[i]})
+        //     this.setState({ listaDeComprasSemLicitacao: listaDeComprasDe2015 })
+        //     this.setState({ linksDoItem: linkDoItem })
+        //     this.obterItensDeCompraSemLicitacao()
+        // }).catch(error => {
+        //     this.fecharModal()
+        //     alert('Houve um erro ao obter compras sem licitação para o item "399010". Por favor, tente novamente. Erro: ' + error.data)
+        // })
         // }
     }
 
@@ -159,13 +167,13 @@ class index extends Component {
         document.getElementById('listasDeMarcasDeComprasSLicitacao').hidden = false
     }
 
-    async atualizarTabelas(resposta, indexAtual) {
-        const compras = resposta._embedded.compras
+    async atualizarTabelas(listaDeCompras, resposta, indexAtual) {
+        const compras = resposta
         const i = compras.findIndex(c => c.co_conjunto_materiais === 399010)
         const marcaAtual = compras[i].no_marca_material.toUpperCase()
 
         await this.atualizarTabelaDeMarcas(marcaAtual)
-        await this.atualizarTabelaDeComprasSemLicitacao(this.state.listaDeComprasSemLicitacao[indexAtual], compras[i])
+        await this.atualizarTabelaDeComprasSemLicitacao(listaDeCompras[indexAtual], compras[i])
     }
 
     async atualizarTabelaDeMarcas(marca) {
@@ -185,7 +193,7 @@ class index extends Component {
     async atualizarTabelaDeComprasSemLicitacao(compraAtual, itemDaCompra) {
         const nomeDoFornecedor = await this.carregarNomeDoFornecedor.obterNomeDoFornecedor(itemDaCompra._links.fornecedor.href)
         const nomeDaUf = await this.carregarNomeDaUf.obterNomeDaUf(compraAtual.co_uasg)
-        debugger
+
         const resposta = await axios.post('http://localhost:5000/atualizartabeladecomprassemlicitacao', {
             codigodacompra: compraAtual._links.self.title.toString().replace(/.+?(\d.+)/g, '$1'),
             nomedamarca: itemDaCompra.no_marca_material.toUpperCase(),
@@ -204,72 +212,11 @@ class index extends Component {
         if (resposta.severity === 'ERROR') {
             alert('Não foi possível atualizar pois ocorreu um erro em: ' + resposta.routine)
         }
-
-        // await this.enviarRequisicaoParaAtualizarTabelaDeCompras(compraAtual, itemDaCompra, nomeDoFornecedor)
     }
-
-    // async enviarRequisicaoParaAtualizarTabelaDeCompras(compraAtual, itemDaCompra, nomeDoFornecedor) {
-    //     const resposta = await axios.post('http://localhost:5000/atualizartabeladecomprassemlicitacao', {
-    //         codigodacompra: compraAtual._links.self.title.toString().replace(/.+?(\d.+)/g, '$1'),
-    //         nomedamarca: itemDaCompra.no_marca_material.toUpperCase(),
-    //         datadacompra: compraAtual.dtDeclaracaoDispensa.slice(0, -9),
-    //         modalidade: compraAtual._links.modalidade_licitacao.title.toString().replace(/.+:\s(.+)/g, '$1'),
-    //         codigocatmat: parseInt(this.state.codigoDoMaterialAtual.toString()),
-    //         descricaodoitem: materiais.get(this.state.codigoDoMaterialAtual).replace(/(\s{2,})/g, ''),
-    //         unidadedefornecimento: compraAtual.ds_objeto_licitacao.toString().replace(/(\s{2,})/g, ''),
-    //         quantidadeofertada: parseInt(itemDaCompra.qt_material_alt.toString()),
-    //         valorunitario: this.obterValorUnitario(itemDaCompra.qt_material_alt, itemDaCompra.vr_estimado),
-    //         nomedofornecedor: nomeDoFornecedor,
-    //         uasg: compraAtual._links.uasg.title.toString().replace(/.+:\s(.+)/g, '$1'),
-    //         uf: this.state.UF
-    //     })
-
-    //     if (resposta.data.severity === 'ERROR') {
-    //         alert('Não foi possível atualizar pois ocorreu um erro em: ' + resposta.data.routine)
-    //     }
-    // }
 
     obterValorUnitario(qtdDeMateriais, valorTotal) {
         return parseFloat(parseFloat(valorTotal) / parseInt(qtdDeMateriais)).toFixed(2)
     }
-
-    // async obterNomeDoFornecedor(link) {
-    //     var statusCode
-    //     do {
-    //         await axios.get(
-    //             link.replace('/id/', '/doc/')
-    //         ).then(resposta => {
-    //             this.setState({ nomeDoFornecedor: resposta.data.razao_social })
-    //             this.setState({ existeErros: false })
-    //             statusCode = 0
-    //         }).catch(erro => {
-    //             statusCode = erro.response.status
-    //         })
-    //     } while (statusCode === 502)
-
-    //     if (statusCode === 404) {
-    //         this.setState({ nomeDoFornecedor: link.replace(/\D/g, '') })
-    //     }
-    // }
-
-    // async obterUf(codigoUasg) {
-    //     var statusCode
-    //     do {
-    //         await axios.get(
-    //             '/licitacoes/doc/uasg/' + codigoUasg + '.json'
-    //         ).then(resposta => {
-    //             this.setState({ UF: resposta.data.sigla_uf.toUpperCase() })
-    //             this.setState({ existeErros: false })
-    //             statusCode = 0
-    //         }).catch(erro => {
-    //             statusCode = erro.response.status
-    //         })
-    //     } while (statusCode === 502)
-
-    //     if (statusCode === 404) {
-    //         this.setState({ UF: codigoUasg })
-    //     }
-    // }
 
     carregarComprasPorAno(ano, nomeDaMarca) {
         alert('Clicou no ano ' + ano + ' da marca ' + nomeDaMarca)
@@ -318,10 +265,6 @@ class index extends Component {
                         })}
                     </Accordion>
                 </div>
-
-                {/* <Button onClick={this.obterComprasSemLicitacao}>
-                    Atualizar
-                </Button> */}
             </Fragment>
         );
     }

@@ -21,6 +21,6 @@ export default class Fornecedor extends React.Component {
             })
         } while (respostaDaRequisicao === 502)
 
-        return respostaDaRequisicao
+        return await respostaDaRequisicao
     }
 }
