@@ -1,222 +1,141 @@
 import React, { Component, Fragment } from 'react'
 import { Accordion, Card, Button, Modal, ProgressBar } from 'react-bootstrap'
 import 'bootstrap/dist/css/bootstrap.min.css'
-import axios from 'axios'
-import ComprasDoBanco from './banco/Compras'
-import MarcasDoBanco from './banco/Marcas'
+import BotaoCarregarComprasDoBanco from './interfaces/BotaoCarregarComprasDoBanco'
 import ComprasApi from './api/Compras'
-import ItensApi from './api/Itens'
-import Fornecedor from './api/Fornecedor'
-import Uf from './api/Uf'
-
-var materiais = new Map()
-materiais.set('276234', 'Insulina, origem: aspart, dosagem: 100u,ml, aplicação: injetável')
-materiais.set('276233', 'Insulina, origem: lispro, dosagem: 100u,ml, aplicação: injetável')
-materiais.set('273836', 'Insulina, origem: glargina, dosagem: 100ui,ml, aplicação: injetável')
-materiais.set('433218', 'Insulina, tipo: degludeca, concentração: 100 ui,ml, forma farmaceutica: solução injetável, caracteristica adicional: com aplicador')
-materiais.set('442011', 'Insulina, tipo: regular, concentração: 100 ui,ml, forma farmaceutica: solução injetável, adicionais: c, sistema de aplicação')
-materiais.set('399010', 'Insulina, tipo: glargina, concentração: 100 ui,ml, forma farmaceutica: solução injetável, caracteristica adicional: com aplicador')
-
-// const qtdCodigosDosMateriais = codigosDosMateirias.length
+import Materiais from '../classes/todos_os_mateiriais/Materiais'
+import AtualizadorDeTabelas from './banco/atualizadores/AtualizadorDeTabelas'
 
 class index extends Component {
     constructor(props) {
         super(props)
 
         this.state = {
-            linksDoItem: [],
-            listaDeComprasSemLicitacao: [],
             showModal: false,
-            listaDeMarcas: [],
-            codigoDoMaterialAtual: '',
-            listaDeTodasAsMarcas: [],
-            existeErros: false
-        }
-
-        this.carregarComprasDoBanco = new ComprasDoBanco()
-        this.carregarMarcasDoBanco = new MarcasDoBanco()
-        this.carregarComprasDaApi = new ComprasApi()
-        this.carregarItensApi = new ItensApi()
-        this.carregarNomeDoFornecedor = new Fornecedor()
-        this.carregarNomeDaUf = new Uf()
-        // this.carregarComprasSemLicitacao = new Compras(props)//.carregarComprasSemLicitacao.bind(this)
-        this.carregarComprasPorAno = this.carregarComprasPorAno.bind(this)
-    }
-
-    async carregarComprasSemLicitacaoDoBanco() {
-        this.setState({ showModal: true })
-        const comprasDoBanco = await this.carregarComprasDoBanco.carregarCompras()
-
-        if (this.isComecaComTrecho(comprasDoBanco.toString(), ['Não há nenhuma', 'Houve um erro'])) {
-            alert(comprasDoBanco)
-        } else {
-            this.setState({ listaDeComprasSemLicitacao: comprasDoBanco })
-            const marcasDoBanco = await this.carregarMarcasDoBanco.carregarMarcas()
-            this.verificarSeVaiAdicionarMarcas(marcasDoBanco)
-        }
-
-        this.fecharModal()
-    }
-
-    verificarSeVaiAdicionarMarcas(marcas) {
-        if (this.isComecaComTrecho(marcas.toString(), ['Não há nenhuma', 'Houve um erro'])) {
-            alert(marcas)
-        } else {
-            this.setState({ listaDeMarcas: marcas })
+            listaDeMarcas: [] // Preciso colocar um valor aqui dentro
         }
     }
 
-    isComecaComTrecho(texto, paramentros) {
-        for (var string in paramentros) {
-            if (texto.startsWith(string)) {
-                return true
-            }
-        }
+    // async carregarComprasSemLicitacaoDoBanco() {
+    //     this.setState({ showModal: true })
+    //     debugger
+    //     const comprasDoBanco = await new ComprasDoBanco().carregarCompras()
 
-        return false
-    }
+    //     if (this.isComecaComTrecho(comprasDoBanco.toString(), ['Não há nenhuma', 'Houve um erro'])) {
+    //         alert(comprasDoBanco)
+    //     } else {
+    //         const marcasDoBanco = await new MarcasDoBanco().carregarMarcas()
+    //         this.verificarSeVaiAdicionarMarcas(marcasDoBanco)
+    //     }
 
-    async fecharModal() {
-        this.sleep(1000).then(() => {
-            this.setState({ showModal: false })
-        })
-    }
+    //     this.fecharModal()
+    // }
 
-    async sleep(ms) {
-        return new Promise(resolve => setTimeout(resolve, ms));
-    }
+    // verificarSeVaiAdicionarMarcas(marcas) {
+    //     if (this.isComecaComTrecho(marcas.toString(), ['Não há nenhuma', 'Houve um erro'])) {
+    //         alert(marcas)
+    //     } else {
+    //         this.setState({ listaDeMarcas: marcas })
+    //     }
+    // }
+
+    // isComecaComTrecho(texto, paramentros) {
+    //     for (var string in paramentros) {
+    //         if (texto.startsWith(string)) {
+    //             return true
+    //         }
+    //     }
+
+    //     return false
+    // }
+
+    // async fecharModal() {
+    //     this.sleep(1000).then(() => {
+    //         this.setState({ showModal: false })
+    //     })
+    // }
+
+    // async sleep(ms) {
+    //     return new Promise(resolve => setTimeout(resolve, ms));
+    // }
 
     async carregarComprasSemLicitacao() {
         this.setState({ showModal: true })
 
-        const comprasDe2015Ate2020 = await this.carregarComprasDaApi.obterCompras(Array.from(materiais.keys()))
-        const qtdDeComprasDe2015Ate2020 = comprasDe2015Ate2020.length
-        var itensDaCompra
-        var linkDoItem
+        const materiais = new Materiais().obterTodosOsMateriais()
+        const codigosDosMateriais = Array.from(materiais.keys())
+        const qtdDeCodigosDosMateriais = codigosDosMateriais.length
 
-        for (var i = 0; i < qtdDeComprasDe2015Ate2020; i++) {
-            linkDoItem = comprasDe2015Ate2020[i]._links.Itens.href.replace('/id/', '/doc/') + '.json'
-            itensDaCompra = await this.carregarItensApi.obterItens(linkDoItem)
-            await this.atualizarTabelas(comprasDe2015Ate2020, itensDaCompra, i)
-        }
-
-
-
-        // for (var i = 0; i < qtdCodigosDosMateriais; i++) {
-        // await axios.get(
-        //     '/compraSemLicitacao/v1/itens_compras_slicitacao.json',
-        //     {
-        //         params: {
-        //             co_conjunto_materiais: '399010',//codigosDosMateirias[i],
-        //             order_by: 'dtDeclaracaoDispensa'
-        //         }
-        //     }
-        // ).then(resposta => {
-        //     var linkDoItem = []
-        //     var listaDeComprasDe2015 = []
-        //     var dataRecebida
-        //     var compras = resposta.data._embedded.compras
-
-        //     for (var x in compras) {
-        //         dataRecebida = new Date(compras[x].dtDeclaracaoDispensa.toString())
-
-        //         if (dataRecebida.getFullYear() >= '2015') {
-        //             listaDeComprasDe2015.push(compras[x])
-        //             linkDoItem.push(compras[x]._links.Itens.href)
-        //         }
-        //     }
-
-        //     this.setState({ codigoDoMaterialAtual: '399010' })//codigosDosMateirias[i]})
-        //     this.setState({ listaDeComprasSemLicitacao: listaDeComprasDe2015 })
-        //     this.setState({ linksDoItem: linkDoItem })
-        //     this.obterItensDeCompraSemLicitacao()
-        // }).catch(error => {
-        //     this.fecharModal()
-        //     alert('Houve um erro ao obter compras sem licitação para o item "399010". Por favor, tente novamente. Erro: ' + error.data)
-        // })
-        // }
-    }
-
-    async obterItensDeCompraSemLicitacao() {
-        const qtdDeLinks = this.state.linksDoItem.length
-        var linkDoItem
-        var hasErro = false
-
-        for (var i = 0; i < qtdDeLinks; i++) {
-            linkDoItem = this.state.linksDoItem[i].replace('/id/', '/doc/') + '.json'
-
-            const resposta = await fetch(
-                linkDoItem
-            ).then(async res => {
-                return await res.json()
-            })
-
-            if (resposta.severity === 'ERROR') {
-                hasErro = true
-            } else {
-                await this.atualizarTabelas(resposta, i)
-                hasErro = false
-            }
-
-            if (hasErro) {
-                i--
-            }
-        }
-
-        this.fecharModal()
-        document.getElementById('listasDeMarcasDeComprasSLicitacao').hidden = false
-    }
-
-    async atualizarTabelas(listaDeCompras, resposta, indexAtual) {
-        const compras = resposta
-        const i = compras.findIndex(c => c.co_conjunto_materiais === 399010)
-        const marcaAtual = compras[i].no_marca_material.toUpperCase()
-
-        await this.atualizarTabelaDeMarcas(marcaAtual)
-        await this.atualizarTabelaDeComprasSemLicitacao(listaDeCompras[indexAtual], compras[i])
-    }
-
-    async atualizarTabelaDeMarcas(marca) {
-        await this.sleep(1000).then(async () => {
-            return await axios.post('http://localhost:5000/atualizartabelademarcas',
-                {
-                    nome: marca
-                }
-            ).then(() => {
-                console.log('esperou')
-            }).catch(err => {
-                console.log(err)
-            })
-        })
-    }
-
-    async atualizarTabelaDeComprasSemLicitacao(compraAtual, itemDaCompra) {
-        const nomeDoFornecedor = await this.carregarNomeDoFornecedor.obterNomeDoFornecedor(itemDaCompra._links.fornecedor.href)
-        const nomeDaUf = await this.carregarNomeDaUf.obterNomeDaUf(compraAtual.co_uasg)
-
-        const resposta = await axios.post('http://localhost:5000/atualizartabeladecomprassemlicitacao', {
-            codigodacompra: compraAtual._links.self.title.toString().replace(/.+?(\d.+)/g, '$1'),
-            nomedamarca: itemDaCompra.no_marca_material.toUpperCase(),
-            datadacompra: compraAtual.dtDeclaracaoDispensa.slice(0, -9),
-            modalidade: compraAtual._links.modalidade_licitacao.title.toString().replace(/.+:\s(.+)/g, '$1'),
-            codigocatmat: parseInt(this.state.codigoDoMaterialAtual.toString()),
-            descricaodoitem: materiais.get(this.state.codigoDoMaterialAtual).replace(/(\s{2,})/g, ''),
-            unidadedefornecimento: compraAtual.ds_objeto_licitacao.toString().replace(/(\s{2,})/g, ''),
-            quantidadeofertada: parseInt(itemDaCompra.qt_material_alt.toString()),
-            valorunitario: this.obterValorUnitario(itemDaCompra.qt_material_alt, itemDaCompra.vr_estimado),
-            nomedofornecedor: nomeDoFornecedor,
-            uasg: compraAtual._links.uasg.title.toString().replace(/.+:\s(.+)/g, '$1'),
-            uf: nomeDaUf
-        })
-
-        if (resposta.severity === 'ERROR') {
-            alert('Não foi possível atualizar pois ocorreu um erro em: ' + resposta.routine)
+        for (var i = 0; i < qtdDeCodigosDosMateriais; i++) {
+            const codigoDoMaterialAtual = codigosDosMateriais[i]
+            const comprasDe2015Ate2020 = await new ComprasApi().obterCompras(codigoDoMaterialAtual)
+            await new AtualizadorDeTabelas().atualizarTabelas(comprasDe2015Ate2020, codigoDoMaterialAtual)
         }
     }
 
-    obterValorUnitario(qtdDeMateriais, valorTotal) {
-        return parseFloat(parseFloat(valorTotal) / parseInt(qtdDeMateriais)).toFixed(2)
-    }
+    // async atualizarTabelas(listaDeCompras, codigoDoMaterialAtual) {
+    //     const qtdDeComprasDe2015Ate2020 = listaDeCompras.length
+
+    //     for (var i = 0; i < qtdDeComprasDe2015Ate2020; i++) {
+    //         const linkDoItem = listaDeCompras[i]._links.Itens.href.replace('/id/', '/doc/') + '.json'
+    //         const compras = await new ItensApi().obterItens(linkDoItem)
+    //         const indexDoMaterialAtual = compras.findIndex(c => c.co_conjunto_materiais === parseInt(codigoDoMaterialAtual))
+    //         const marcaAtual = compras[indexDoMaterialAtual].no_marca_material.toUpperCase()
+        
+    //         await new AtualizadorDeMarcas().atualizarTabelaDeMarcas(marcaAtual)
+    //         await new AtualizadorDeCompraSemLicitacao().atualizarTabelaDeComprasSemLicitacao(
+    //             listaDeCompras[i],
+    //             compras[indexDoMaterialAtual],
+    //             codigoDoMaterialAtual
+    //         )
+    //     }
+    // }
+
+    // async atualizarTabelaDeMarcas(marca) {
+    //     await this.sleep(1000).then(async () => {
+    //         return await axios.post(
+    //             'http://localhost:5000/atualizartabelademarcas',
+    //             {
+    //                 nome: marca
+    //             }
+    //         ).then(() => {
+    //             console.log('esperou')
+    //         }).catch(err => {
+    //             console.log(err)
+    //         })
+    //     })
+    // }
+
+    // async atualizarTabelaDeComprasSemLicitacao(compraAtual, itemDaCompra, codigoDoMaterialAtual) {
+    //     const nomeDoFornecedor = await new Fornecedor().obterNomeDoFornecedor(itemDaCompra._links.fornecedor.href)
+    //     const nomeDaUf = await new Uf().obterNomeDaUf(compraAtual.co_uasg)
+
+    //     const resposta = await axios.post(
+    //         'http://localhost:5000/atualizartabeladecomprassemlicitacao',
+    //         {
+    //             codigodacompra: compraAtual._links.self.title.replace(/.+?(\d.+)/g, '$1'),
+    //             nomedamarca: itemDaCompra.no_marca_material.toUpperCase(),
+    //             datadacompra: compraAtual.dtDeclaracaoDispensa.slice(0, -9),
+    //             modalidade: compraAtual._links.modalidade_licitacao.title.replace(/.+:\s(.+)/g, '$1'),
+    //             codigocatmat: parseInt(codigoDoMaterialAtual),
+    //             descricaodoitem: _materiais.get(codigoDoMaterialAtual).replace(/(\s{2,})/g, ''),
+    //             unidadedefornecimento: compraAtual.ds_objeto_licitacao.replace(/(\s{2,})/g, ''),
+    //             quantidadeofertada: parseInt(itemDaCompra.qt_material_alt),
+    //             valorunitario: this.obterValorUnitario(itemDaCompra.vr_estimado, parseInt(itemDaCompra.qt_material_alt)),
+    //             nomedofornecedor: nomeDoFornecedor,
+    //             uasg: compraAtual._links.uasg.title.toString().replace(/.+:\s(.+)/g, '$1'),
+    //             uf: nomeDaUf
+    //         }
+    //     )
+
+    //     if (resposta.status !== 200) {
+    //         alert('Não foi possível atualizar pois ocorreu um erro em: ' + resposta.status)
+    //     }
+    // }
+
+    // obterValorUnitario(valorTotal, qtdDeMateriais) {
+    //     return parseFloat(valorTotal / qtdDeMateriais).toFixed(2)
+    // }
 
     carregarComprasPorAno(ano, nomeDaMarca) {
         alert('Clicou no ano ' + ano + ' da marca ' + nomeDaMarca)
@@ -224,11 +143,13 @@ class index extends Component {
 
     render() {
         const anos = ['2015', '2016', '2017', '2018', '2019', '2020']
+
         return (
             <Fragment>
-                <Button onClick={this.carregarComprasSemLicitacaoDoBanco.bind(this)} variant="primary">
+                <BotaoCarregarComprasDoBanco />
+                {/* <Button onClick={this.carregarComprasSemLicitacaoDoBanco.bind(this)} variant="primary">
                     Carregar compras sem licitação
-                </Button>
+                </Button> */}
                 <Button onClick={this.carregarComprasSemLicitacao.bind(this)} variant="primary">
                     Atualizar lista de compras sem licitação
                 </Button>
