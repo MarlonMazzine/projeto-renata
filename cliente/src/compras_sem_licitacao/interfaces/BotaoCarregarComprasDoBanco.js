@@ -1,22 +1,27 @@
 import React from 'react'
 import Compras from '../banco/Compras'
 import Marcas from '../banco/Marcas'
-import 'bootstrap/dist/css/bootstrap'
-// import 'bootstrap/dist/css/bootstrap.min.css'
+import Modal from './Modal'
+import ListarMarcas from '../interfaces/ListarMarcas'
+import PropTypes from 'prop-types';
+import 'bootstrap/dist/css/bootstrap.css'
+
+ListarMarcas.propTypes = {
+    marcas: PropTypes.array.isRequired
+}
 
 export default class BotaoCarregarComprasDoBanco extends React.Component {
     constructor(props) {
         super(props)
 
         this.state = {
-            showModal: false,
             listaDeMarcas: []
         }
     }
     
     async carregarComprasSemLicitacaoDoBanco() {
-        this.setState({ showModal: true })
-        debugger
+        new Modal().setModalState('modalCarregando')
+
         const comprasDoBanco = await new Compras().carregarCompras()
 
         if (this.isComecaComTrecho(comprasDoBanco.toString(), ['Não há nenhuma', 'Houve um erro'])) {
@@ -26,7 +31,7 @@ export default class BotaoCarregarComprasDoBanco extends React.Component {
             this.verificarSeVaiAdicionarMarcas(marcasDoBanco)
         }
 
-        this.fecharModal()
+        new Modal().setModalState('modalCarregando')
     }
 
     verificarSeVaiAdicionarMarcas(marcas) {
@@ -47,22 +52,14 @@ export default class BotaoCarregarComprasDoBanco extends React.Component {
         return false
     }
 
-    async fecharModal() {
-        this.sleep(1000).then(() => {
-            this.setState({ showModal: false })
-        })
-    }
-
-    async sleep(ms) {
-        return new Promise(resolve => setTimeout(resolve, ms));
-    }
-
-    render () {
+    render() {
         return (
             <React.Fragment>
-                <button className="primary" onClick={this.carregarComprasSemLicitacaoDoBanco.bind(this)}>
-                    Carregar compras sem licitação
+                <button type="button" className="btn btn-primary" onClick={this.carregarComprasSemLicitacaoDoBanco.bind(this)}>
+                    Carregar compras<br />sem licitação
                 </button>
+
+                <ListarMarcas marcas={this.state.listaDeMarcas}/>
             </React.Fragment>
         )
     }

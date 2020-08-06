@@ -1,7 +1,7 @@
 import React from 'react'
 import Fornecedor from '../../api/Fornecedor'
 import Uf from '../../api/Uf'
-import Materiais from '../../../classes/todos_os_mateiriais/Materiais'
+import Materiais from '../../../classes/todos_os_materiais/Materiais'
 
 
 function obterValorUnitario(valorTotal, qtdDeMateriais) {
@@ -10,7 +10,7 @@ function obterValorUnitario(valorTotal, qtdDeMateriais) {
 
 async function obterCorpoDaRequisicao(compraAtual, itemDaCompra, codigoDoMaterialAtual) {
     const materiais = new Materiais().obterTodosOsMateriais()
-    const nomeDoFornecedor = await new Fornecedor().obterNomeDoFornecedor(itemDaCompra._links.fornecedor.href)
+    const nomeDoFornecedor = await new Fornecedor().obterNomeDoFornecedor(itemDaCompra._links.fornecedor)
     const nomeDaUf = await new Uf().obterNomeDaUf(compraAtual.co_uasg)
 
     return JSON.stringify({
@@ -31,16 +31,29 @@ async function obterCorpoDaRequisicao(compraAtual, itemDaCompra, codigoDoMateria
 
 export default class AtualizadorDeCompraSemLicitacao extends React.Component {
     async atualizarTabelaDeComprasSemLicitacao(compraAtual, itemDaCompra, codigoDoMaterialAtual) {
-        const resposta = await fetch(
+        const requestBody = await obterCorpoDaRequisicao(compraAtual, itemDaCompra, codigoDoMaterialAtual)
+        
+        return await fetch(
             'http://localhost:5000/atualizartabeladecomprassemlicitacao',
             {
                 method: 'POST',
-                body: obterCorpoDaRequisicao(compraAtual, itemDaCompra, codigoDoMaterialAtual)
+                body: requestBody,
+                headers: { 
+                    "Content-type": "application/json; charset=UTF-8"
+                }
             }
-        )
+        ).then(async res => {
+            const resposta = await res.json()
+            
+            if (res.status !== 200) {
+                alert('Não foi possível atualizar pois ocorreu um erro em: ' + res.status)
+            } else {
+                return await resposta
+            }
+        }).catch(err => {
+            debugger
+            alert('Houve um erro ao atualizar as compras. Erro: ' + err)
+        })
 
-        if (resposta.status !== 200) {
-            alert('Não foi possível atualizar pois ocorreu um erro em: ' + resposta.status)
-        }
     }
 }

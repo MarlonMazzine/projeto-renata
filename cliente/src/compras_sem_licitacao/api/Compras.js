@@ -4,16 +4,14 @@ var listaDeComprasDe2015Ate2020 = []
 
 function obterComprasDe2015Ate2020(compras) {
     var dataRecebida
-    var iterator = 0
+
     for (var compra in compras) {
         dataRecebida = new Date(compras[compra].dtDeclaracaoDispensa)
 
         if (dataRecebida.getFullYear() >= '2015') {
             listaDeComprasDe2015Ate2020.push(compras[compra])
-            iterator++
         }
     }
-    console.log(iterator)
 }
 
 export default class Compras extends React.Component {

@@ -9,6 +9,7 @@ app.use(express.json())
 
 app.get('/comprassemlicitacao', (req, res) => {
   const sql = "SELECT * FROM public.comprassemlicitacao"
+
   db.query(
     sql,
     (q_err, q_res) => {
@@ -20,6 +21,7 @@ app.get('/comprassemlicitacao', (req, res) => {
 
 app.get('/todasasmarcas', (req, res) => {
   const sql = "SELECT * FROM marcas ORDER BY nome ASC"
+
   db.query(
     sql,
     (q_err, q_res) => {
@@ -52,19 +54,28 @@ app.post('/atualizartabeladecomprassemlicitacao', (req, res) => {
   db.query(
     sql,
     parametros,
-    (q_res) => {
-      res.send('Compra cadastrada com sucesso! Resposta: ' + q_res)
+    (q_err, q_res) => {
+      if (q_err === undefined) {
+        res.json('Erro ao cadastrar')
+      } else {
+        res.json('Cadastrado com sucesso')
+      }
     }
   )
 })
 
 app.post('/atualizartabelademarcas', (req, res) => {
   const sql = 'INSERT INTO marcas(nome) VALUES ($1)'
+
   db.query(
     sql,
     [req.body.nome],
-    (q_res) => {
-      res.send('Marca adicionada com sucesso! Resposta: ' + q_res)
+    (q_err, q_res) => {
+      if (q_err === undefined) {
+        res.json('Erro ao cadastrar')
+      } else {
+        res.json('Cadastrado com sucesso')
+      }
     }
   )
 })
