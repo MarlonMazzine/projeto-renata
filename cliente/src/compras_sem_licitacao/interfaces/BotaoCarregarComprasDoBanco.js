@@ -1,14 +1,15 @@
 import React from 'react'
-import Compras from '../banco/Compras'
-import Marcas from '../banco/Marcas'
+import Compras from '../banco/buscar_no_banco/Compras'
+import Marcas from '../banco/buscar_no_banco/Marcas'
 import Modal from './Modal'
-import ListarMarcas from '../interfaces/ListarMarcas'
 import PropTypes from 'prop-types';
 import 'bootstrap/dist/css/bootstrap.css'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faDatabase } from '@fortawesome/free-solid-svg-icons'
 
-ListarMarcas.propTypes = {
-    marcas: PropTypes.array.isRequired
-}
+// ListarMarcas.propTypes = {
+//     marcas: PropTypes.array.isRequired
+// }
 
 export default class BotaoCarregarComprasDoBanco extends React.Component {
     constructor(props) {
@@ -18,7 +19,7 @@ export default class BotaoCarregarComprasDoBanco extends React.Component {
             listaDeMarcas: []
         }
     }
-    
+
     async carregarComprasSemLicitacaoDoBanco() {
         new Modal().setModalState('modalCarregando')
 
@@ -39,6 +40,7 @@ export default class BotaoCarregarComprasDoBanco extends React.Component {
             alert(marcas)
         } else {
             this.setState({ listaDeMarcas: marcas })
+            this.props.setListaDeMarcas(this.state.listaDeMarcas)
         }
     }
 
@@ -52,14 +54,33 @@ export default class BotaoCarregarComprasDoBanco extends React.Component {
         return false
     }
 
+    async obterQuantidadeDeComprasPorMarca() {
+        var quantidadeDeComprasPorMarca
+
+        quantidadeDeComprasPorMarca = await fetch(
+            'http://localhost:5000/todasasmarcas?nomeDaMarca=.'
+        )
+        // .then(async (res) => {
+        //     const resposta = res.json()
+        // })
+    }
+
     render() {
         return (
             <React.Fragment>
-                <button type="button" className="btn btn-primary" onClick={this.carregarComprasSemLicitacaoDoBanco.bind(this)}>
+                <li type="button"
+                    className="text-center minha-cor w-100 h-50p pt-3"
+                    onClick={this.carregarComprasSemLicitacaoDoBanco.bind(this)}
+                    data-id="1">
+                    <FontAwesomeIcon className="mr-3" icon={faDatabase} />
+                    Carregar compras
+                </li>
+                {/* <button
+                    type="button"
+                    className="btn btn-primary ml-4"
+                    onClick={this.carregarComprasSemLicitacaoDoBanco.bind(this)}>
                     Carregar compras<br />sem licitação
-                </button>
-
-                <ListarMarcas marcas={this.state.listaDeMarcas}/>
+                </button> */}
             </React.Fragment>
         )
     }

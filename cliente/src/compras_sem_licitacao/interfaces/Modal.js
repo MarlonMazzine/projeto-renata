@@ -1,6 +1,6 @@
 import React from 'react'
 import 'bootstrap/dist/css/bootstrap.css'
-import './styles.css'
+import '../styles.css'
 
 export default class Modal extends React.Component {
     async setModalState(nomeDoIdDoModal) {

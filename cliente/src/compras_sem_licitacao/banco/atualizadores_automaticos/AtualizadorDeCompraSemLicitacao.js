@@ -3,7 +3,6 @@ import Fornecedor from '../../api/Fornecedor'
 import Uf from '../../api/Uf'
 import Materiais from '../../../classes/todos_os_materiais/Materiais'
 
-
 function obterValorUnitario(valorTotal, qtdDeMateriais) {
     return parseFloat(valorTotal / qtdDeMateriais).toFixed(2)
 }
@@ -54,6 +53,5 @@ export default class AtualizadorDeCompraSemLicitacao extends React.Component {
             debugger
             alert('Houve um erro ao atualizar as compras. Erro: ' + err)
         })
-
     }
 }

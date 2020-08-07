@@ -1,5 +1,11 @@
 import React from 'react'
 
+function sleep(ms) {
+    return new Promise(
+        resolve => setTimeout(resolve, ms)
+    );
+}
+
 export default class Itens extends React.Component {
     async obterItens(linkDoItem) {
         var respostaDaRequisicao
@@ -9,6 +15,7 @@ export default class Itens extends React.Component {
                 linkDoItem
             ).then(async res => {
                 if (res.status === 502) {
+                    await sleep(2000)
                     return res.status
                 } else if (res.status !== 200) {
                     return linkDoItem

@@ -5,9 +5,9 @@ import AtualizadorDeCompraSemLicitacao from './AtualizadorDeCompraSemLicitacao'
 
 function sleep(ms) {
     return new Promise(
-      resolve => setTimeout(resolve, ms)
+        resolve => setTimeout(resolve, ms)
     );
-  }
+}
 
 export default class AtualizadorDeTabelas extends React.Component {
     async atualizarTabelas(listaDeCompras, codigoDoMaterialAtual) {
@@ -21,6 +21,7 @@ export default class AtualizadorDeTabelas extends React.Component {
             if (itensDaCompra === linkDoItem || itensDaCompra === undefined) {
                 debugger
                 totalDeErros++
+                await sleep(1500)
                 continue
             }
 
@@ -29,15 +30,14 @@ export default class AtualizadorDeTabelas extends React.Component {
             if (itensDaCompra[indexDoMaterialAtual] === undefined) {
                 debugger
                 totalDeErros++
+                await sleep(1500)
                 continue
             }
-            
+
             const marcaAtual = itensDaCompra[indexDoMaterialAtual].no_marca_material.toUpperCase()
 
             await new AtualizadorDeMarcas().atualizarTabelaDeMarcas(marcaAtual)
-            console.log('Hora antes de pausar: ' + new Date.now())
             await sleep(4000)
-            console.log('Hora depois de pausar: ' + new Date.now())
             await new AtualizadorDeCompraSemLicitacao().atualizarTabelaDeComprasSemLicitacao(
                 listaDeCompras[i],
                 itensDaCompra[indexDoMaterialAtual],

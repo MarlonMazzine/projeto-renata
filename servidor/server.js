@@ -31,6 +31,19 @@ app.get('/todasasmarcas', (req, res) => {
   )
 });
 
+app.get('/todasasmarcas?nomeDaMarca:marca', (req, res) => {
+  console.log('novo teste' + req)
+  // const sql = "SELECT * FROM marcas ORDER BY nome ASC"
+
+  // db.query(
+  //   sql,
+  //   (q_err, q_res) => {
+  //     res.json(q_res)
+  //     console.log(q_err)
+  //   }
+  // )
+});
+
 app.post('/atualizartabeladecomprassemlicitacao', (req, res) => {
   const requisicao = req.body
   const codigoDaCompra = requisicao.codigodacompra

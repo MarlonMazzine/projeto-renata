@@ -1,5 +1,11 @@
 import React from 'react'
 
+function sleep(ms) {
+    return new Promise(
+        resolve => setTimeout(resolve, ms)
+    );
+}
+
 export default class Fornecedor extends React.Component {
     async obterNomeDoFornecedor(fornecedor) {
         if (fornecedor === undefined) {
@@ -15,6 +21,7 @@ export default class Fornecedor extends React.Component {
                 linkDoFornecedor.replace('/id/', '/doc/') + '.json'
             ).then(async res => {
                 if (res.status === 502) {
+                    await sleep(2000)
                     return res.status
                 } else if (res.status !== 200) {
                     return cpfCnpj
