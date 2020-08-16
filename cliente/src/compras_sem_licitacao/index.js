@@ -2,7 +2,7 @@ import React, { Component, Fragment } from 'react'
 import 'bootstrap/dist/css/bootstrap.min.css'
 import ListarMarcas from './interfaces/ListarMarcas'
 import BotaoCarregarComprasDoBanco from './interfaces/BotaoCarregarComprasDoBanco'
-// import BotaoCarregarComprasDaApi from './interfaces/BotaoCarregarComprasDaApi'
+import BotaoCarregarComprasDaApi from './interfaces/BotaoCarregarComprasDaApi'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faSyncAlt, faDatabase } from '@fortawesome/free-solid-svg-icons'
 import Modal from './interfaces/Modal'
@@ -29,10 +29,7 @@ class index extends Component {
                         <div className="w-100 minha-cor">
                             <ol className="list-group">
                                 <BotaoCarregarComprasDoBanco setListaDeMarcas={this.setListaDeMarcas} />
-                                <li type="button" className="text-center minha-cor w-100 h-50p pt-3">
-                                    <FontAwesomeIcon className="mr-3" icon={faSyncAlt} />
-                                    Atualiza compras
-                                </li>
+                                <BotaoCarregarComprasDaApi />
                             </ol>
                         </div>
                     </div>
@@ -49,10 +46,8 @@ class index extends Component {
                             </li>
                         </ol>
                     </div>
-                    {/*<BotaoCarregarComprasDaApi />
-                    <BotaoCarregarComprasDoBanco /> */}
                 </div>
-                {/* <hr className="border-dark"></hr> */}
+
                 <ListarMarcas marcas={this.state.listaDeMarcas} />
                 <Modal />
             </Fragment>

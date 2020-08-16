@@ -1,66 +1,81 @@
 import React from 'react'
-// import { Accordion, Card } from 'react-bootstrap'
+import ModalTabelaDeCompras from './ModalTabelaDeCompras'
 import 'bootstrap/dist/css/bootstrap.min.css'
 
-const ListarMarcas = ({ marcas, qtdDeComprasPorMarca }) => {
-    if (marcas === '') {
-        return null
+function obterCorpoDaRequisicao(ano, nomeDaMarca) {
+    return JSON.stringify({
+        nomeDaMarca: nomeDaMarca,
+        anoDaCompra: ano
+    })
+}
+
+export default class ListarMarcas extends React.Component {
+    constructor(props) {
+        super(props)
+
+        this.state = {
+            compras: [],
+            modalState: false
+        }
+    }
+    async carregarTabelaDeCompras(ano, nomeDaMarca) {
+        const corpoDaRequisicao = obterCorpoDaRequisicao(ano, nomeDaMarca)
+        const resposta = await fetch(
+            'http://localhost:5000/comprasporanoemarca',
+            {
+                method: 'POST',
+                body: corpoDaRequisicao,
+                headers: {
+                    "Content-type": "application/json; charset=UTF-8"
+                }
+            }
+        ).then(async (res) => {
+            const resp = await res.json()
+            return await resp.rows
+        })
+
+        this.setState({ compras: resposta })
+
+        if (this.state.compras.length !== 0) {
+            this.setState({ modalState: true })
+        }
     }
 
-    function carregarComprasPorAno(ano, nomeDaMarca) {
-        alert('Clicou no ano ' + ano + ' da marca ' + nomeDaMarca)
-    }
+    render() {
+        if (this.props.marcas === '') {
+            return null
+        }
 
-    const anos = ['2015', '2016', '2017', '2018', '2019', '2020']
+        const anos = ['2015', '2016', '2017', '2018', '2019', '2020']
 
-    return (
-        <div id="listasDeMarcasDeComprasSLicitacao" className="w-50 ml-450px">
-            <ul className="list-group">
-                {marcas.map((listaDeMarcas) => {
-                    return <li className="list-group-item d-flex justify-content-between align-items-center">
-                        <span className="badge badge-primary badge-pill">14</span>
-                        {listaDeMarcas.nome}
-                        <div className="btn-group">
-                            {anos.map((ano) => {
-                                return <button
-                                    type="button"
-                                    className="btn btn-secondary"
-                                    onClick={() => carregarComprasPorAno(ano, listaDeMarcas.nome)}>
-                                    {ano}
-                                </button>
-                            })}
-                        </div>
-                    </li>
-                })}
-            </ul>
-
-            {/* <Accordion>
-                {marcas.map((listaDeMarcas) => {
-                    return <Card>
-                        <Card.Header>
-                            <Accordion.Toggle className="btn btn-link" eventKey={listaDeMarcas.id.toString()}>
-                                {listaDeMarcas.nome}
-                            </Accordion.Toggle>
-                        </Card.Header>
-                        <Accordion.Collapse eventKey={listaDeMarcas.id.toString()}>
-                            <Card.Body>
+        return (
+            <React.Fragment>
+                <div id="listasDeMarcasDeComprasSLicitacao" className="w-50 ml-450px">
+                    <ul className="list-group">
+                        {this.props.marcas.map((marca, i) => {
+                            return <li key={i} className="list-group-item d-flex justify-content-between align-items-center">
+                                {marca.nome}
                                 <div className="btn-group">
-                                    {anos.map((ano) => {
+                                    {anos.map((ano, j) => {
                                         return <button
+                                            key={j}
                                             type="button"
                                             className="btn btn-secondary"
-                                            onClick={() => carregarComprasPorAno(ano, listaDeMarcas.nome)}>
+                                            onClick={this.carregarTabelaDeCompras.bind(this, ano, marca.nome)}>
                                             {ano}
                                         </button>
                                     })}
+                                    <button type="button" className="btn minha-cor text-light" onClick={this.carregarTabelaDeCompras.bind(this, 'Todas', marca.nome)}>
+                                        Todas
+                                </button>
                                 </div>
-                            </Card.Body>
-                        </Accordion.Collapse>
-                    </Card>
-                })}
-            </Accordion> */}
-        </div>
-    )
-}
+                            </li>
+                        })}
+                    </ul>
+                </div>
 
-export default ListarMarcas
+                <ModalTabelaDeCompras compras={this.state.compras} modalState={this.state.modalState} />
+            </React.Fragment>
+        )
+    }
+}

@@ -3,6 +3,8 @@ import Compras from '../api/Compras'
 import Materiais from '../../classes/todos_os_materiais/Materiais'
 import AtualizadorDeTabelas from '../banco/atualizadores_automaticos/AtualizadorDeTabelas'
 import Modal from './Modal'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faSyncAlt } from '@fortawesome/free-solid-svg-icons'
 import 'bootstrap/dist/css/bootstrap.css'
 
 export default class BotaoCarregarComprasDaApi extends React.Component {
@@ -29,12 +31,17 @@ export default class BotaoCarregarComprasDaApi extends React.Component {
 
         new Modal().setModalState('modalCarregando')
     }
-    
-    render () {
+
+    render() {
         return (
-            <button type="button" className="btn btn-primary" onClick={this.carregarComprasSemLicitacao.bind(this)}>
-                Atualizar lista de<br/>compras sem licitação
-            </button>
+            <React.Fragment>
+                <li type="button"
+                className="text-center minha-cor w-100 h-50p pt-3"
+                onClick={this.carregarComprasSemLicitacao.bind(this)}>
+                    <FontAwesomeIcon className="mr-3" icon={faSyncAlt} />
+                    Atualizar compras
+                </li>
+            </React.Fragment>
         )
     }
 }

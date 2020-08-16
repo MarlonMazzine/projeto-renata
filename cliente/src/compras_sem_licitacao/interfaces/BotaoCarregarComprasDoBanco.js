@@ -2,14 +2,9 @@ import React from 'react'
 import Compras from '../banco/buscar_no_banco/Compras'
 import Marcas from '../banco/buscar_no_banco/Marcas'
 import Modal from './Modal'
-import PropTypes from 'prop-types';
 import 'bootstrap/dist/css/bootstrap.css'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faDatabase } from '@fortawesome/free-solid-svg-icons'
-
-// ListarMarcas.propTypes = {
-//     marcas: PropTypes.array.isRequired
-// }
 
 export default class BotaoCarregarComprasDoBanco extends React.Component {
     constructor(props) {
@@ -54,17 +49,6 @@ export default class BotaoCarregarComprasDoBanco extends React.Component {
         return false
     }
 
-    async obterQuantidadeDeComprasPorMarca() {
-        var quantidadeDeComprasPorMarca
-
-        quantidadeDeComprasPorMarca = await fetch(
-            'http://localhost:5000/todasasmarcas?nomeDaMarca=.'
-        )
-        // .then(async (res) => {
-        //     const resposta = res.json()
-        // })
-    }
-
     render() {
         return (
             <React.Fragment>
@@ -75,12 +59,6 @@ export default class BotaoCarregarComprasDoBanco extends React.Component {
                     <FontAwesomeIcon className="mr-3" icon={faDatabase} />
                     Carregar compras
                 </li>
-                {/* <button
-                    type="button"
-                    className="btn btn-primary ml-4"
-                    onClick={this.carregarComprasSemLicitacaoDoBanco.bind(this)}>
-                    Carregar compras<br />sem licitação
-                </button> */}
             </React.Fragment>
         )
     }
