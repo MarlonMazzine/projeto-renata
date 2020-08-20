@@ -13,7 +13,7 @@ export default class Marcas extends React.Component {
             console.log(resposta.rows)
             return resposta.rows
         }).catch(err => {
-            console.log('errou')
+            console.log(err)
             return 'Houve um erro ao obter as marcas cadastradas. Tente novamente, por favor. Erro: ' + err.message
         })
     }
