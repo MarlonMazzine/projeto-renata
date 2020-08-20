@@ -19,6 +19,9 @@
     "react-scripts": "3.4.1",
     "websocket-extensions": "^0.1.4"
   },
+  "engines": {
+    "node": "12.x"
+  },
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",

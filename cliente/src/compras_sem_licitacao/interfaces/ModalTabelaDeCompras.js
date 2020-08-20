@@ -66,7 +66,7 @@ export default class ModalTabelaDeCompras extends React.Component {
                                                     <td className="align-middle">{compra.uasg}</td>
                                                     <td className="text-nowrap text-center align-middle">{compra.uf}</td>
                                                     <td className="text-nowrap text-center align-middle">
-                                                        <button type="button" className="btn btn-info btn-sm" title="Editar"><FontAwesomeIcon icon={faEdit}/></button>
+                                                        <button type="button" className="btn btn-info btn-sm" title="Editar" disabled><FontAwesomeIcon icon={faEdit}/></button>
                                                     </td>
                                                 </tr>
                                             })}

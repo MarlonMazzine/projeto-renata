@@ -12,6 +12,9 @@
     "pg": "^8.3.0",
     "websocket-extensions": "^0.1.4"
   },
+  "engines": {
+    "node": "12.x"
+  },
   "devDependencies": {
     "concurrently": "^3.5.0"
   }
