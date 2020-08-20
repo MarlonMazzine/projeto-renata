@@ -4,7 +4,6 @@ import { faEdit } from '@fortawesome/free-solid-svg-icons'
 
 export default class ModalTabelaDeCompras extends React.Component {
     render() {
-        debugger
         const compras = this.props.compras
         var estadoDoModal = this.props.modalState
         const modal = document.getElementById('modalTabelaDeCompras')
