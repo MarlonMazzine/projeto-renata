@@ -33,7 +33,7 @@ export default class AtualizadorDeCompraSemLicitacao extends React.Component {
         const requestBody = await obterCorpoDaRequisicao(compraAtual, itemDaCompra, codigoDoMaterialAtual)
         
         return await fetch(
-            'http://localhost:5000/atualizartabeladecomprassemlicitacao',
+            'https://projeto-renata.herokuapp.com:5000/atualizartabeladecomprassemlicitacao',
             {
                 method: 'POST',
                 body: requestBody,

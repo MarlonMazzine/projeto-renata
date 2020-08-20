@@ -1,27 +1,27 @@
-const { Pool } = require('pg')
+// const { Pool } = require('pg')
 
-const pool = new Pool({
-  user: 'postgres',
-  host: 'localhost',
-  database: 'projeto-renata',
-  password: 'password',
-  port: 5432
-})
+// const pool = new Pool({
+//   user: 'postgres',
+//   host: 'localhost',
+//   database: 'projeto-renata',
+//   password: 'password',
+//   port: 5432
+// })
 
-module.exports = pool
+// module.exports = pool
 
-// const { Client } = require('pg');
+const { Client } = require('pg');
 
-// const url = 'postgres://sbpsamfueobvgs:e08463833c0be19a775e3e8ce96cc9916d6303242aaeb0ea8c08a61a320b0fe6@ec2-3-91-112-166.compute-1.amazonaws.com:5432/ddgtj3gc8qqucl?useUnicode=true&characterEncoding=UTF-8'
+const url = 'postgres://pvbyjombciqqro:a377bd1ab95dda847b2087bc5334535684fe9478a93eb0d2a9b8d712c5213b29@ec2-52-86-116-94.compute-1.amazonaws.com:5432/dfd42ptdsoq6a?useUnicode=true&characterEncoding=UTF-8'
 
-// const client = new Client({
-//   connectionString: process.env.CLEAR_DATABASE_URL || url,
-//   ssl: {
-//     rejectUnauthorized: false
-//   }
-// });
+const client = new Client({
+  connectionString: process.env.DATABASE_URL || url,
+  ssl: {
+    rejectUnauthorized: false
+  }
+});
 
-// module.exports = client
+module.exports = client
 
 // client.connect();
 
