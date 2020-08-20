@@ -10,7 +10,7 @@ export default class Marcas extends React.Component {
             if (resposta.rowCount === 0) {
                 return 'Não há nenhuma marca cadastrada no banco.'
             }
-
+            console.log(resposta.rows)
             return resposta.rows
         }).catch(err => {
             return 'Houve um erro ao obter as marcas cadastradas. Tente novamente, por favor. Erro: ' + err.message
