@@ -5,6 +5,7 @@ export default class Marcas extends React.Component {
         return await fetch(
             '/todasasmarcas'
         ).then(async res => {
+            debugger
             const resposta = await res.json()
 
             if (resposta.rowCount === 0) {
