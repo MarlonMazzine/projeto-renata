@@ -12,7 +12,7 @@ export default class Itens extends React.Component {
 
         do {
             respostaDaRequisicao = await fetch(
-                'http://compras.dados.gov.br' + linkDoItem
+                'compras.dados.gov.br' + linkDoItem
             ).then(async res => {
                 if (res.status === 502 || res.status === 503) {
                     await sleep(2000)

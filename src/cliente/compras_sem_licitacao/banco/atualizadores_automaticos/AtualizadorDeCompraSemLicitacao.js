@@ -33,7 +33,7 @@ export default class AtualizadorDeCompraSemLicitacao extends React.Component {
         const requestBody = await obterCorpoDaRequisicao(compraAtual, itemDaCompra, codigoDoMaterialAtual)
         
         return await fetch(
-            process.env.DATABASE_URL_UTF8 + ':5000/atualizartabeladecomprassemlicitacao',
+            'http://localhost:5000/atualizartabeladecomprassemlicitacao',
             {
                 method: 'POST',
                 body: requestBody,

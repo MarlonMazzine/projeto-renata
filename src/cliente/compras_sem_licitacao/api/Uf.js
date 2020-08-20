@@ -12,7 +12,7 @@ export default class Uf extends React.Component {
 
         do {
             respostaDaRequisicao = await fetch(
-                'http://compras.dados.gov.br/licitacoes/doc/uasg/' + codigoUasg + '.json'
+                'compras.dados.gov.br/licitacoes/doc/uasg/' + codigoUasg + '.json'
             ).then(async res => {
                 if (res.status === 502 || res.status === 503) {
                     await sleep(2000)
