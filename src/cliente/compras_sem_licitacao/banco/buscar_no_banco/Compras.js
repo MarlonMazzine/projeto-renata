@@ -3,7 +3,7 @@ import React from 'react'
 export default class Compras extends React.Component {
     async carregarCompras() {
         return await fetch(
-            '/comprassemlicitacao'
+            'http://localhost:5000/comprassemlicitacao'
         ).then(async res => {
             const resposta = await res.json()
 
