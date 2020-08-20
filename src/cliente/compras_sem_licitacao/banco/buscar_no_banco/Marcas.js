@@ -3,7 +3,7 @@ import React from 'react'
 export default class Marcas extends React.Component {
     async carregarMarcas() {
         return await fetch(
-            'https://projeto-renata.herokuapp.com:5000/todasasmarcas'
+            process.env.DATABASE_URL_UTF8 + ':5000/todasasmarcas'
         ).then(async res => {
             const resposta = await res.json()
 

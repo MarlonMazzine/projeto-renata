@@ -3,7 +3,7 @@ import React from 'react'
 export default class Compras extends React.Component {
     async carregarCompras() {
         return await fetch(
-            'https://projeto-renata.herokuapp.com:5000/comprassemlicitacao'
+            process.env.DATABASE_URL_UTF8 + ':5000/comprassemlicitacao'
         ).then(async res => {
             const resposta = await res.json()
 
