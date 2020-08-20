@@ -11,7 +11,7 @@ export default class AtualizadorDeMarcas extends React.Component {
         const requestBody = obterCorpoDaRequisicao(marca)
 
         return await fetch(
-            process.env.DATABASE_URL_UTF8 + ':5000/atualizartabelademarcas',
+            '/atualizartabelademarcas',
             {
                 method: 'POST',
                 body: requestBody,

@@ -22,7 +22,7 @@ export default class ListarMarcas extends React.Component {
         ano = ano === 'Todas' ? '20' : ano
         const corpoDaRequisicao = obterCorpoDaRequisicao(ano, nomeDaMarca)
         const resposta = await fetch(
-            process.env.DATABASE_URL_UTF8 + ':5000/comprasporanoemarca',
+            '/comprasporanoemarca',
             {
                 method: 'POST',
                 body: corpoDaRequisicao,

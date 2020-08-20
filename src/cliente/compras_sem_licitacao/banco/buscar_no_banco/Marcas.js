@@ -3,7 +3,7 @@ import React from 'react'
 export default class Marcas extends React.Component {
     async carregarMarcas() {
         return await fetch(
-            process.env.DATABASE_URL_UTF8 + ':5000/todasasmarcas'
+            '/todasasmarcas'
         ).then(async res => {
             const resposta = await res.json()
 
