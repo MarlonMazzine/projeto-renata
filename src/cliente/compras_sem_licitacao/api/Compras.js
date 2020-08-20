@@ -16,7 +16,7 @@ function obterComprasDe2015Ate2020(compras) {
 
 export default class Compras extends React.Component {
     async obterCompras(codigosDosMateriais) {
-        var url = `/compraSemLicitacao/v1/itens_compras_slicitacao.json?co_conjunto_materiais=${codigosDosMateriais}&order_by=dtDeclaracaoDispensa`
+        var url = `http://compras.dados.gov.br/compraSemLicitacao/v1/itens_compras_slicitacao.json?co_conjunto_materiais=${codigosDosMateriais}&order_by=dtDeclaracaoDispensa`
         var tentarDeNovo = false
 
         do {
@@ -34,6 +34,7 @@ export default class Compras extends React.Component {
             })
         } while (tentarDeNovo)
 
+        console.log(listaDeComprasDe2015Ate2020)
         return listaDeComprasDe2015Ate2020
     }
 }
