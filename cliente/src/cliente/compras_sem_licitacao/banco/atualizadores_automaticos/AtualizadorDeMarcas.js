@@ -23,7 +23,6 @@ export default class AtualizadorDeMarcas extends React.Component {
             const resposta = await res.json()
             return await resposta
         }).catch(err => {
-            debugger
             alert('Houve um erro ao atualizar as marcas. Erro: ' + err)
         })
     }

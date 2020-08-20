@@ -27,6 +27,7 @@ export default class Compras extends React.Component {
                     return true
                 } else {
                     const resposta = await res.json()
+                    listaDeComprasDe2015Ate2020.length = 0
                     obterComprasDe2015Ate2020(resposta._embedded.compras)
                     return false
                 }

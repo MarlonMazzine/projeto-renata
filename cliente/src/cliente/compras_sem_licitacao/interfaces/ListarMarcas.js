@@ -19,6 +19,7 @@ export default class ListarMarcas extends React.Component {
         }
     }
     async carregarTabelaDeCompras(ano, nomeDaMarca) {
+        ano = ano === 'Todas' ? '20' : ano
         const corpoDaRequisicao = obterCorpoDaRequisicao(ano, nomeDaMarca)
         const resposta = await fetch(
             'http://localhost:5000/comprasporanoemarca',
@@ -34,10 +35,12 @@ export default class ListarMarcas extends React.Component {
             return await resp.rows
         })
 
-        this.setState({ compras: resposta })
+        await this.setState({ compras: resposta })
 
         if (this.state.compras.length !== 0) {
-            this.setState({ modalState: true })
+            await this.setState({ modalState: true })
+        } else {
+            alert(`Não há nenhuma compra para exibir no ano de ${ano} da marca ${nomeDaMarca}.`)
         }
     }
 

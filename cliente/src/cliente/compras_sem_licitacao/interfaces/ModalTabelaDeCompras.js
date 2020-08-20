@@ -52,7 +52,6 @@ export default class ModalTabelaDeCompras extends React.Component {
 
                                         <tbody>
                                             {compras.map((compra, index) => {
-                                                debugger
                                                 return <tr key={index + 1}>
                                                     <th className="align-middle" scope="row">{index + 1}</th>
                                                     <td className="text-nowrap text-center align-middle">{compra.modalidade}</td>
@@ -74,7 +73,7 @@ export default class ModalTabelaDeCompras extends React.Component {
                                 </div>
                                 <div className="modal-footer">
                                     <button type="button" className="btn btn-secondary" data-dismiss="modal" onClick={() => document.getElementById('modalTabelaDeCompras').style.display = 'none'}>Fechar</button>
-                                    <button type="button" className="btn btn-info">Exportar paca XLS</button>
+                                    <button type="button" className="btn btn-info" disabled>Exportar paca XLS</button>
                                 </div>
                             </div>
                         </div>

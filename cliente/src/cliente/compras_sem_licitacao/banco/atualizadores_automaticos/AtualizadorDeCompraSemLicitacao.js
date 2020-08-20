@@ -50,7 +50,6 @@ export default class AtualizadorDeCompraSemLicitacao extends React.Component {
                 return await resposta
             }
         }).catch(err => {
-            debugger
             alert('Houve um erro ao atualizar as compras. Erro: ' + err)
         })
     }

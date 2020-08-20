@@ -19,7 +19,6 @@ export default class AtualizadorDeTabelas extends React.Component {
             const itensDaCompra = await new Itens().obterItens(linkDoItem)
 
             if (itensDaCompra === linkDoItem || itensDaCompra === undefined) {
-                debugger
                 totalDeErros++
                 await sleep(1500)
                 continue
@@ -28,7 +27,6 @@ export default class AtualizadorDeTabelas extends React.Component {
             const indexDoMaterialAtual = itensDaCompra.findIndex(c => c.co_conjunto_materiais === parseInt(codigoDoMaterialAtual))
 
             if (itensDaCompra[indexDoMaterialAtual] === undefined) {
-                debugger
                 totalDeErros++
                 await sleep(1500)
                 continue

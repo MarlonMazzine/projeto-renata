@@ -14,7 +14,7 @@ export default class Itens extends React.Component {
             respostaDaRequisicao = await fetch(
                 linkDoItem
             ).then(async res => {
-                if (res.status === 502) {
+                if (res.status === 502 || res.status === 503) {
                     await sleep(2000)
                     return res.status
                 } else if (res.status !== 200) {
@@ -26,7 +26,7 @@ export default class Itens extends React.Component {
             }).catch(() => {
                 return linkDoItem
             })
-        } while (respostaDaRequisicao === 502)
+        } while (respostaDaRequisicao === 502 || respostaDaRequisicao === 503)
 
         return await respostaDaRequisicao
     }

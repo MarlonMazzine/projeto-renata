@@ -13,8 +13,11 @@ app.get('/comprassemlicitacao', (req, res) => {
   db.query(
     sql,
     (q_err, q_res) => {
-      res.json(q_res)
-      console.log(q_err)
+      if (q_err === undefined) {
+        res.json(q_res)
+      } else {
+        res.json('Erro ao cadastrar')
+      }
     }
   )
 });
@@ -25,8 +28,11 @@ app.get('/todasasmarcas', (req, res) => {
   db.query(
     sql,
     (q_err, q_res) => {
-      res.json(q_res)
-      console.log(q_err)
+      if (q_err === undefined) {
+        res.json(q_res)
+      } else {
+        res.json('Erro ao cadastrar')
+      }
     }
   )
 });
@@ -82,12 +88,12 @@ app.post('/atualizartabelademarcas', (req, res) => {
 app.post('/comprasporanoemarca', (req, res) => {
   const requisisao = req.body
   const marca = requisisao.nomeDaMarca
-  const ano = requisisao.anoDaCompra
+  const ano = requisisao.anoDaCompra + '%'
   const parametros = [marca, ano]
 
   const sql = `SELECT * FROM public.comprassemlicitacao 
     WHERE nomedamarca = $1 
-    AND TO_CHAR(datadacompra, 'YYYY') = $2 
+    AND TO_CHAR(datadacompra, 'YYYY') LIKE $2 
     ORDER BY codigocatmat`
 
   db.query(
@@ -97,6 +103,7 @@ app.post('/comprasporanoemarca', (req, res) => {
       if (q_err === undefined) {
         res.json(q_res)
       } else {
+        console.log(q_err)
         res.json('Erro ao cadastrar')
       }
     }
