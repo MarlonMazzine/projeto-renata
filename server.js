@@ -2,6 +2,7 @@ const express = require('express');
 const app = express()
 const port = process.env.PORT || 5000;
 const db = require('./_criarconexao')
+const path = require('path');
 var cors = require('cors');
 
 app.use(cors())
@@ -13,8 +14,11 @@ app.get('/comprassemlicitacao', (req, res) => {
   db.query(
     sql,
     (q_err, q_res) => {
-      res.json(q_res)
-      console.log(q_err)
+      if (q_err === undefined) {
+        res.json(q_res)
+      } else {
+        res.json('Erro ao cadastrar')
+      }
     }
   )
 });
@@ -25,8 +29,11 @@ app.get('/todasasmarcas', (req, res) => {
   db.query(
     sql,
     (q_err, q_res) => {
-      res.json(q_res)
-      console.log(q_err)
+      if (q_err === undefined) {
+        res.json(q_res)
+      } else {
+        res.json('Erro ao cadastrar')
+      }
     }
   )
 });
@@ -102,5 +109,13 @@ app.post('/comprasporanoemarca', (req, res) => {
     }
   )
 })
+
+if (process.env.NODE_ENV === 'production') {
+  app.use(express.static(path.join(__dirname, 'cliente/build')));
+
+  app.get('*', function(req, res) {
+    res.sendFile(path.join(__dirname, 'cliente/build', 'index.html'));
+  });
+}
 
 app.listen(port, () => console.log(`Listening on port ${port}`));
