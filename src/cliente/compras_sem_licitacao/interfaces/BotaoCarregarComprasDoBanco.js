@@ -17,7 +17,7 @@ export default class BotaoCarregarComprasDoBanco extends React.Component {
 
     async carregarComprasSemLicitacaoDoBanco() {
         new Modal().setModalState('modalCarregando')
-        const comprasDoBanco = await new Compras().carregarCompras()
+        const comprasDoBanco = ''// await new Compras().carregarCompras()
 
         if (this.isComecaComTrecho(comprasDoBanco.toString(), ['Não há nenhuma', 'Houve um erro'])) {
             alert(comprasDoBanco)
