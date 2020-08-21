@@ -17,7 +17,6 @@ export default class BotaoCarregarComprasDoBanco extends React.Component {
 
     async carregarComprasSemLicitacaoDoBanco() {
         new Modal().setModalState('modalCarregando')
-
         const comprasDoBanco = await new Compras().carregarCompras()
 
         if (this.isComecaComTrecho(comprasDoBanco.toString(), ['Não há nenhuma', 'Houve um erro'])) {
@@ -40,8 +39,8 @@ export default class BotaoCarregarComprasDoBanco extends React.Component {
     }
 
     isComecaComTrecho(texto, paramentros) {
-        for (var string in paramentros) {
-            if (texto.startsWith(string)) {
+        for (var i in paramentros) {
+            if (texto.startsWith(paramentros[i])) {
                 return true
             }
         }

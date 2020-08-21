@@ -45,7 +45,7 @@ export default class BotaoCarregarComprasDaApi extends React.Component {
             var indexDaCompraCadastradaNoBanco =
                 comprasCadastradasNoBanco.findIndex(x =>
                     x.codigocatmat === parseInt(codigoDoMaterialAtual) && x.codigodacompra === codigoDaCompraApi
-                    )
+                )
             
             if (indexDaCompraCadastradaNoBanco !== -1) {
                 continue
