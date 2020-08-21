@@ -1,0 +1,33 @@
+#modal-backgound{
+    background-color: rgba(10, 10, 10, 0.86);
+    bottom: 0;
+    left: 0;
+    position: absolute;
+    right: 0;
+    top: 0;
+}
+
+li.minha-cor:hover, #sidebar {
+    background-color: #2A9D8F !important;
+}
+
+.minha-cor {
+    background-color: #33C1B1 !important;
+}
+
+.h-50p {
+    height: 55px !important;
+}
+
+.hl {
+    border-bottom: 1px solid white;
+    width: 100%;
+}
+
+.h-250px {
+    height: 250px;
+}
+
+.ml-450px {
+    margin-left: 450px;
+}
