@@ -8,7 +8,7 @@ app.use(cors())
 app.use(express.json())
 
 app.get('/comprassemlicitacao', (req, res) => {
-  const sql = "SELECT * FROM public.comprassemlicitacao"
+  const sql = "SELECT * FROM comprassemlicitacao"
 
   db.query(
     sql,
